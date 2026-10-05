@@ -645,6 +645,7 @@ const describeCases = (config) => {
 													run.done = false;
 													return handleWatchError(/** @type {Error} */ (error));
 												}
+												if (failed) return;
 												run.stats = stats;
 												lastFileDependencies = new Set();
 												lastContextDependencies = [];
