@@ -15,6 +15,7 @@ require("../helpers/warmup-webpack");
  * @property {((i: EXPECTED_ANY, options: EXPECTED_ANY) => string)=} findBundle
  * @property {boolean=} noTests
  * @property {boolean=} restartCompiler close the compiler after each step and start a new one
+ * @property {boolean=} strictWatchDependencies require identical dependency sets for history-independent fixtures
  * @property {((error: Error, compiler: import("../../").Compiler | import("../../").MultiCompiler) => void | Promise<void>)=} watchError check a watch or comparison error and request recovery on the same compiler
  * @property {string=} skipFreshAssetContent reason asset contents depend on build history
  * @property {string=} skipFreshWarnings reason warnings depend on build history
