@@ -350,7 +350,7 @@ const describeCases = (config) => {
 							let triggeringFilename;
 							let lastHash = "";
 							/** @type {Set<string>} */
-							let lastFileDependencies = new Set();
+							const lastFileDependencies = new Set();
 							/** @type {string[]} */
 							let lastContextDependencies = [];
 							/** @type {Set<string>} */
