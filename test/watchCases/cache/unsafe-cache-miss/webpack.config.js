@@ -1,6 +1,7 @@
 "use strict";
 
 const { WebpackError } = require("../../../../");
+const currentWatchStep = require("../../../helpers/currentWatchStep");
 
 /** @typedef {import("../../../../").Compiler} Compiler */
 /** @typedef {import("../../../../").Module} Module */
@@ -9,6 +10,8 @@ const { WebpackError } = require("../../../../");
 /** @type {import("../../../../").Configuration} */
 module.exports = {
 	mode: "development",
+	// Retaining the graph bypasses the cache restoration this case exercises.
+	incremental: false,
 	experiments: {
 		cacheUnaffected: true
 	},
@@ -27,13 +30,10 @@ module.exports = {
 			 * @param {Compiler} compiler the compiler
 			 */
 			apply(compiler) {
-				let build = 0;
-				compiler.hooks.done.tap("DropCachedModule", () => {
-					build++;
-				});
 				compiler.hooks.normalModuleFactory.tap("DropCachedModule", (nmf) => {
 					nmf.hooks.beforeResolve.tap("DropCachedModule", (data) => {
 						if (data.request !== "./unchanged-module") return;
+						const build = Number(currentWatchStep.step);
 						if (build === 1) return false;
 						if (build === 2) data.request = "./shared";
 					});
@@ -42,6 +42,8 @@ module.exports = {
 				let indexMemCache;
 				compiler.hooks.compilation.tap("DropCachedModule", (compilation) => {
 					compilation.hooks.seal.tap("DropCachedModule", () => {
+						if (!compiler.watchMode) return;
+						const build = Number(currentWatchStep.step);
 						const index = /** @type {Module} */ (
 							[...compilation.modules].find((m) =>
 								m.identifier().endsWith("index.js")
@@ -62,7 +64,10 @@ module.exports = {
 				compiler.cache.hooks.get.tapAsync(
 					{ name: "DropCachedModule", stage: -100 },
 					(identifier, etag, gotHandlers, callback) => {
-						if (build === 1 && identifier.endsWith("unchanged-module.js")) {
+						if (
+							currentWatchStep.step === "1" &&
+							identifier.endsWith("unchanged-module.js")
+						) {
 							return callback(null, null);
 						}
 						callback();
