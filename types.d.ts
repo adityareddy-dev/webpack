@@ -21307,7 +21307,7 @@ declare class ModuleGraph {
 	): void;
 
 	/**
-	 * Adds the provided module to the module graph.
+	 * Adds an explanatory connection without duplicating an existing reason.
 	 */
 	addExtraReason(module: Module, explanation: string): void;
 
